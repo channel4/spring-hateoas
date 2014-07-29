@@ -32,6 +32,8 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * Value object for links.
@@ -54,6 +56,7 @@ public class Link implements Serializable {
 
 	@XmlAttribute private String rel;
 	@XmlAttribute private String href;
+	@XmlAttribute @JsonInclude(value=Include.NON_EMPTY) private String profile;
 	@XmlTransient @JsonIgnore private UriTemplate template;
 
 	/**
@@ -77,6 +80,17 @@ public class Link implements Serializable {
 	}
 
 	/**
+	 * Creates a new {@link Link} to the given URI with the given rel and the given profile.
+	 * 
+	 * @param href must not be {@literal null} or empty.
+	 * @param rel must not be {@literal null} or empty.
+	 * @param profile must not be {@literal null} or empty.
+	 */
+	public Link(String href, String rel, String profile) {
+		this(new UriTemplate(href), rel, profile);
+	}
+	
+	/**
 	 * Creates a new Link from the given {@link UriTemplate} and rel.
 	 * 
 	 * @param template must not be {@literal null}.
@@ -84,12 +98,31 @@ public class Link implements Serializable {
 	 */
 	public Link(UriTemplate template, String rel) {
 
-		Assert.notNull(template, "UriTempalte must not be null!");
+		Assert.notNull(template, "UriTemplate must not be null!");
 		Assert.hasText(rel, "Rel must not be null or empty!");
 
 		this.template = template;
 		this.href = template.toString();
 		this.rel = rel;
+	}
+
+	/**
+	 * Creates a new Link from the given {@link UriTemplate} and rel.
+	 * 
+	 * @param template must not be {@literal null}.
+	 * @param rel must not be {@literal null} or empty.
+	 * @param profile must not be {@literal null} or empty.
+	 */
+	public Link(UriTemplate template, String rel, String profile) {
+
+		Assert.notNull(template, "UriTemplate must not be null!");
+		Assert.hasText(rel, "Rel must not be null or empty!");
+		Assert.hasText(profile, "Profile must not be null or empty!");
+
+		this.template = template;
+		this.href = template.toString();
+		this.rel = rel;
+		this.profile = profile;
 	}
 
 	/**
@@ -118,6 +151,15 @@ public class Link implements Serializable {
 	}
 
 	/**
+	 * Returns the profile of the link.
+	 * 
+	 * @return
+	 */
+	public String getProfile() {
+		return profile;
+	}
+
+	/**
 	 * Returns a {@link Link} pointing to the same URI but with the given relation.
 	 * 
 	 * @param rel must not be {@literal null} or empty.
@@ -125,6 +167,16 @@ public class Link implements Serializable {
 	 */
 	public Link withRel(String rel) {
 		return new Link(href, rel);
+	}
+
+	/**
+	 * Returns a {@link Link} pointing to the same URI but with the given profile.
+	 * 
+	 * @param rel must not be {@literal null} or empty.
+	 * @return
+	 */
+	public Link withProfile(String profile) {
+		return new Link(href, rel, profile);
 	}
 
 	/**
@@ -224,6 +276,9 @@ public class Link implements Serializable {
 		int result = 17;
 		result += 31 * href.hashCode();
 		result += 31 * rel.hashCode();
+		if (profile != null) {
+			result += 31 * profile.hashCode();
+		}
 		return result;
 	}
 
@@ -233,7 +288,11 @@ public class Link implements Serializable {
 	 */
 	@Override
 	public String toString() {
-		return String.format("<%s>;rel=\"%s\"", href, rel);
+		String tostr = String.format("<%s>;rel=\"%s\"", href, rel);
+		if (this.profile != null) {
+			tostr += String.format(";profile=\"%s\"", profile);
+		}
+		return tostr;
 	}
 
 	/**

@@ -55,6 +55,11 @@ public class LinkUnitTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
+	public void rejectsNullProfile() {
+		new Link("foo", "bar", null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
 	public void rejectsEmptyHref() {
 		new Link("");
 	}
@@ -64,11 +69,25 @@ public class LinkUnitTest {
 		new Link("foo", "");
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsEmptyProfile() {
+		new Link("foo", "bar", "");
+	}
+
 	@Test
 	public void sameRelAndHrefMakeSameLink() {
 
 		Link left = new Link("foo", Link.REL_SELF);
 		Link right = new Link("foo", Link.REL_SELF);
+
+		TestUtils.assertEqualAndSameHashCode(left, right);
+	}
+
+	@Test
+	public void sameRelAndHrefAndProfileMakeSameLink() {
+
+		Link left = new Link("foo", Link.REL_SELF, "bar");
+		Link right = new Link("foo", Link.REL_SELF, "bar");
 
 		TestUtils.assertEqualAndSameHashCode(left, right);
 	}
@@ -105,9 +124,9 @@ public class LinkUnitTest {
 
 	@Test
 	public void parsesRFC5988HeaderIntoLink() {
-
 		assertThat(Link.valueOf("</something>;rel=\"foo\""), is(new Link("/something", "foo")));
 		assertThat(Link.valueOf("</something>;rel=\"foo\";title=\"Some title\""), is(new Link("/something", "foo")));
+		assertThat(Link.valueOf("</something>;rel=\"foo\";profile=\"bar\""), is(new Link("/something", "foo", "bar")));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
