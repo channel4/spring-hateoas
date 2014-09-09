@@ -33,7 +33,6 @@ import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.core.JsonRelAsArray;
 import org.springframework.hateoas.core.JsonResourceAsArray;
-import org.springframework.hateoas.hal.Jackson2HalModule.HalResourcesSerializer;
 import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -497,11 +496,21 @@ public class Jackson2HalModule extends SimpleModule {
                 if (JsonToken.START_ARRAY.equals(jp.nextToken())) {
                     while (!JsonToken.END_ARRAY.equals(jp.nextToken())) {
                         link = jp.readValueAs(Link.class);
-                        result.add(new Link(link.getHref(), relation));
+                        String profile = link.getProfile();
+                        if (profile != null) {
+                            result.add(new Link(link.getHref(), relation, profile));
+                        } else {
+                            result.add(new Link(link.getHref(), relation));
+                        }
                     }
                 } else {
                     link = jp.readValueAs(Link.class);
-                    result.add(new Link(link.getHref(), relation));
+                    String profile = link.getProfile();
+                    if (profile != null) {
+                        result.add(new Link(link.getHref(), relation, profile));
+                    } else {
+                        result.add(new Link(link.getHref(), relation));
+                    }
                 }
             }
 
