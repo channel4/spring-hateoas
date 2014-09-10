@@ -27,9 +27,6 @@ assertThat(link.getHref(), is("http://localhost:8080/something"));
 assertThat(link.getRel(), is("my-rel"));
 assertThat(link.getProfile(), is("my-profile"));
 
-Link link = new Link("http://localhost:8080/something").withSelfRel().withProfile("my-profile");
-
-
 ```
 
 ## Resources
@@ -118,6 +115,10 @@ Person person = new Person(1L, "Dave", "Matthews");
 Link link = linkTo(PersonController.class).slash(person.getId()).withSelfRel();
 assertThat(link.getRel(), is(Link.SELF));
 assertThat(link.getHref(), endsWith("/people/1"));
+
+Link link = linkTo(PersonController.class).slash(person.getId()).withSelfRel().withProfile("my-profile");
+assertThat(link.getProfile(), is("my-profile"));
+
 ```
 
 If your domain class implements the `Identifiable` interface the `slash(…)` method will rather invoke `getId()` on the given object instead of `toString()`. Thus the just shown link creation can be abbreviated to:
