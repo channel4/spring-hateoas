@@ -1,6 +1,12 @@
 # Spring Hateoas
 This project provides some APIs to ease creating REST representations that follow the [HATEOAS](http://en.wikipedia.org/wiki/HATEOAS) principle when working with Spring and especially Spring MVC. The core problem it tries to address is link creation and representation assembly.
 
+## Channel4 requirements
+This framework is not fulfilling all the requisites for building C4 Microservices, for instance:
+* Links to surface $_links.profile (not supported by Spring Hateoas)
+* When a link is considered a collection, to return always as an array (Hateoas framework renders it based on the number of items within the same rel)
+* When embedding, the object should keep its nature: if it's an array link -> embed as an array, if it's an object -> embeds as an object (introduced 2 new annotations @JsonRelAsArray and @JsonResourceAsArray, and updated logic in Jackson2HalModule.
+
 ## JAXB / JSON integration
 As representations for REST web services are usually rendered in either XML or JSON the natural choice of technology to achieve this is either JAXB, JSON or both in combination. To follow HATEOAS principles you need to incorporate links into those representation. Spring HATEOAS provides a set of useful types to ease working with those.
 
@@ -15,6 +21,12 @@ assertThat(link.getRel(), is(Link.SELF));
 Link link = new Link("http://localhost:8080/something", "my-rel");
 assertThat(link.getHref(), is("http://localhost:8080/something"));
 assertThat(link.getRel(), is("my-rel"));
+
+Link link = new Link("http://localhost:8080/something", "my-rel", "my-profile");
+assertThat(link.getHref(), is("http://localhost:8080/something"));
+assertThat(link.getRel(), is("my-rel"));
+assertThat(link.getProfile(), is("my-profile"));
+
 ```
 
 ## Resources
@@ -103,6 +115,10 @@ Person person = new Person(1L, "Dave", "Matthews");
 Link link = linkTo(PersonController.class).slash(person.getId()).withSelfRel();
 assertThat(link.getRel(), is(Link.SELF));
 assertThat(link.getHref(), endsWith("/people/1"));
+
+Link link = linkTo(PersonController.class).slash(person.getId()).withSelfRel().withProfile("my-profile");
+assertThat(link.getProfile(), is("my-profile"));
+
 ```
 
 If your domain class implements the `Identifiable` interface the `slash(…)` method will rather invoke `getId()` on the given object instead of `toString()`. Thus the just shown link creation can be abbreviated to:
