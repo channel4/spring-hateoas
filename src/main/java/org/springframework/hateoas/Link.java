@@ -166,7 +166,10 @@ public class Link implements Serializable {
 	 * @return
 	 */
 	public Link withRel(String rel) {
-		return new Link(href, rel);
+	    if(profile != null){
+	        return new Link(href, rel, profile);
+	    }
+	    return new Link(href, rel);
 	}
 
 	/**
