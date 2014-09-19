@@ -176,7 +176,7 @@ public class Link implements Serializable {
          * @param profile
          */
         public Link(String href, String rel, String name, String title, String type, String profile) {
-            this(new UriTemplate(href), rel, name, title, type);
+            this(new UriTemplate(href), rel, name, title, type, profile);
         }
     
         /**
