@@ -44,313 +44,379 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonIgnoreProperties("templated")
 public class Link implements Serializable {
 
-	private static final long serialVersionUID = -9037755944661782121L;
+        private static final long serialVersionUID = -9037755944661782121L;
 
-	public static final String ATOM_NAMESPACE = "http://www.w3.org/2005/Atom";
+        public static final String ATOM_NAMESPACE = "http://www.w3.org/2005/Atom";
 
-	public static final String REL_SELF = "self";
-	public static final String REL_FIRST = "first";
-	public static final String REL_PREVIOUS = "prev";
-	public static final String REL_NEXT = "next";
-	public static final String REL_LAST = "last";
+        public static final String REL_SELF = "self";
+        public static final String REL_FIRST = "first";
+        public static final String REL_PREVIOUS = "prev";
+        public static final String REL_NEXT = "next";
+        public static final String REL_LAST = "last";
 
-	@XmlAttribute private String rel;
-	@XmlAttribute private String href;
-	@XmlAttribute @JsonInclude(value=Include.NON_EMPTY) private String profile;
-	@XmlTransient @JsonIgnore private UriTemplate template;
+        @XmlAttribute private String rel;
+        @XmlAttribute private String href;
+        @XmlAttribute @JsonInclude(value=Include.NON_EMPTY) private String profile;
+        @XmlTransient @JsonIgnore private UriTemplate template;
+        @XmlAttribute @JsonInclude(JsonInclude.Include.NON_NULL) private String name;
+        @XmlAttribute @JsonInclude(JsonInclude.Include.NON_NULL) private String type;
+        @XmlAttribute @JsonInclude(JsonInclude.Include.NON_NULL) private String title;
 
-	/**
-	 * Creates a new link to the given URI with the self rel.
-	 * 
-	 * @see #REL_SELF
-	 * @param href must not be {@literal null} or empty.
-	 */
-	public Link(String href) {
-		this(href, REL_SELF);
-	}
+        /**
+         * Creates a new link to the given URI with the self rel.
+         * 
+         * @see #REL_SELF
+         * @param href must not be {@literal null} or empty.
+         */
+        public Link(String href) {
+                this(href, REL_SELF);
+        }
 
-	/**
-	 * Creates a new {@link Link} to the given URI with the given rel.
-	 * 
-	 * @param href must not be {@literal null} or empty.
-	 * @param rel must not be {@literal null} or empty.
-	 */
-	public Link(String href, String rel) {
-		this(new UriTemplate(href), rel);
-	}
+        /**
+         * Creates a new {@link Link} to the given URI with the given rel.
+         * 
+         * @param href must not be {@literal null} or empty.
+         * @param rel must not be {@literal null} or empty.
+         */
+        public Link(String href, String rel) {
+                this(new UriTemplate(href), rel);
+        }
 
-	/**
-	 * Creates a new {@link Link} to the given URI with the given rel and the given profile.
-	 * 
-	 * @param href must not be {@literal null} or empty.
-	 * @param rel must not be {@literal null} or empty.
-	 * @param profile must not be {@literal null} or empty.
-	 */
-	public Link(String href, String rel, String profile) {
-		this(new UriTemplate(href), rel, profile);
-	}
-	
-	/**
-	 * Creates a new Link from the given {@link UriTemplate} and rel.
-	 * 
-	 * @param template must not be {@literal null}.
-	 * @param rel must not be {@literal null} or empty.
-	 */
-	public Link(UriTemplate template, String rel) {
+        /**
+         * Creates a new {@link Link} to the given URI with the given rel and the given profile.
+         * 
+         * @param href must not be {@literal null} or empty.
+         * @param rel must not be {@literal null} or empty.
+         * @param profile must not be {@literal null} or empty.
+         */
+        public Link(String href, String rel, String profile) {
+                this(new UriTemplate(href), rel, profile);
+        }
+        
+        /**
+         * Creates a new Link from the given {@link UriTemplate} and rel.
+         * 
+         * @param template must not be {@literal null}.
+         * @param rel must not be {@literal null} or empty.
+         */
+        public Link(UriTemplate template, String rel) {
 
-		Assert.notNull(template, "UriTemplate must not be null!");
-		Assert.hasText(rel, "Rel must not be null or empty!");
+                Assert.notNull(template, "UriTemplate must not be null!");
+                Assert.hasText(rel, "Rel must not be null or empty!");
 
-		this.template = template;
-		this.href = template.toString();
-		this.rel = rel;
-	}
+                this.template = template;
+                this.href = template.toString();
+                this.rel = rel;
+        }
 
-	/**
-	 * Creates a new Link from the given {@link UriTemplate} and rel.
-	 * 
-	 * @param template must not be {@literal null}.
-	 * @param rel must not be {@literal null} or empty.
-	 * @param profile must not be {@literal null} or empty.
-	 */
-	public Link(UriTemplate template, String rel, String profile) {
+        /**
+         * Creates a new Link from the given {@link UriTemplate} and rel.
+         * 
+         * @param template must not be {@literal null}.
+         * @param rel must not be {@literal null} or empty.
+         * @param profile must not be {@literal null} or empty.
+         */
+        public Link(UriTemplate template, String rel, String profile) {
 
-		Assert.notNull(template, "UriTemplate must not be null!");
-		Assert.hasText(rel, "Rel must not be null or empty!");
-		Assert.hasText(profile, "Profile must not be null or empty!");
+                Assert.notNull(template, "UriTemplate must not be null!");
+                Assert.hasText(rel, "Rel must not be null or empty!");
+                Assert.hasText(profile, "Profile must not be null or empty!");
 
-		this.template = template;
-		this.href = template.toString();
-		this.rel = rel;
-		this.profile = profile;
-	}
+                this.template = template;
+                this.href = template.toString();
+                this.rel = rel;
+                this.profile = profile;
+        }
 
-	/**
-	 * Empty constructor required by the marshalling framework.
-	 */
-	protected Link() {
+        /**
+         * Creates a new {@link Link} to the given URI with the given rel and the 
+         * given name, title and type.
+         * 
+         * @param href must not be {@literal null} or empty.
+         * @param rel must not be {@literal null} or empty.
+         * @param name
+         * @param title must not be {@literal null} or empty.
+         * @param type
+         */
+        public Link(String href, String rel, String name, String title, String type) {
+            this(new UriTemplate(href), rel, name, title, type);
+        }
+        
+        /**
+         * Creates a new Link from the given {@link UriTemplate} and rel.
+         * 
+         * @param template template must not be {@literal null}.
+         * @param rel must not be {@literal null} or empty.
+         * @param name
+         * @param title must not be {@literal null} or empty.
+         * @param type
+         */
+        public Link(UriTemplate template, String rel, String name, String title, String type) {
+    
+            Assert.notNull(template, "UriTemplate must not be null!");
+            Assert.hasText(rel, "Rel must not be null or empty!");
+    
+            this.template = template;
+            this.href = template.toString();
+            this.rel = rel;
+            this.name = name;
+            this.title = title;
+            this.type = type;
+        }
+        
+        /**
+         * Empty constructor required by the marshalling framework.
+         */
+        protected Link() {
 
-	}
+        }
 
-	/**
-	 * Returns the actual URI the link is pointing to.
-	 * 
-	 * @return
-	 */
-	public String getHref() {
-		return href;
-	}
+        /**
+         * Returns the actual URI the link is pointing to.
+         * 
+         * @return
+         */
+        public String getHref() {
+                return href;
+        }
 
-	/**
-	 * Returns the rel of the link.
-	 * 
-	 * @return
-	 */
-	public String getRel() {
-		return rel;
-	}
+        /**
+         * Returns the rel of the link.
+         * 
+         * @return
+         */
+        public String getRel() {
+                return rel;
+        }
 
-	/**
-	 * Returns the profile of the link.
-	 * 
-	 * @return
-	 */
-	public String getProfile() {
-		return profile;
-	}
+        /**
+         * Returns the profile of the link.
+         * 
+         * @return
+         */
+        public String getProfile() {
+                return profile;
+        }
+        
+        /**
+         * Returns the name of the link.
+         * 
+         * @return
+         */
+        public String getName() {
+            return name;
+        }
+    
+        /**
+         * Returns the title of the link.
+         * 
+         * @return
+         */
+        public String getTitle() {
+            return title;
+        }
+    
+        /**
+          * Returns the type of the link.
+         * 
+         * @return
+         */
+        public String getType() {
+            return type;
+        }
 
-	/**
-	 * Returns a {@link Link} pointing to the same URI but with the given relation.
-	 * 
-	 * @param rel must not be {@literal null} or empty.
-	 * @return
-	 */
-	public Link withRel(String rel) {
-	    if(profile != null){
-	        return new Link(href, rel, profile);
-	    }
-	    return new Link(href, rel);
-	}
+        /**
+         * Returns a {@link Link} pointing to the same URI but with the given relation.
+         * 
+         * @param rel must not be {@literal null} or empty.
+         * @return
+         */
+        public Link withRel(String rel) {
+            if(profile != null){
+                return new Link(href, rel, profile);
+            }
+            return new Link(href, rel);
+        }
 
-	/**
-	 * Returns a {@link Link} pointing to the same URI but with the given profile.
-	 * 
-	 * @param rel must not be {@literal null} or empty.
-	 * @return
-	 */
-	public Link withProfile(String profile) {
-		return new Link(href, rel, profile);
-	}
+        /**
+         * Returns a {@link Link} pointing to the same URI but with the given profile.
+         * 
+         * @param rel must not be {@literal null} or empty.
+         * @return
+         */
+        public Link withProfile(String profile) {
+                return new Link(href, rel, profile);
+        }
 
-	/**
-	 * Returns a {@link Link} pointing to the same URI but with the {@code self} relation.
-	 * 
-	 * @return
-	 */
-	public Link withSelfRel() {
-		return withRel(Link.REL_SELF);
-	}
+        /**
+         * Returns a {@link Link} pointing to the same URI but with the {@code self} relation.
+         * 
+         * @return
+         */
+        public Link withSelfRel() {
+                return withRel(Link.REL_SELF);
+        }
 
-	/**
-	 * Returns the variable names contained in the template.
-	 * 
-	 * @return
-	 */
-	@JsonIgnore
-	public List<String> getVariableNames() {
-		return getUriTemplate().getVariableNames();
-	}
+        /**
+         * Returns the variable names contained in the template.
+         * 
+         * @return
+         */
+        @JsonIgnore
+        public List<String> getVariableNames() {
+                return getUriTemplate().getVariableNames();
+        }
 
-	/**
-	 * Returns all {@link TemplateVariables} contained in the {@link Link}.
-	 * 
-	 * @return
-	 */
-	@JsonIgnore
-	public List<TemplateVariable> getVariables() {
-		return getUriTemplate().getVariables();
-	}
+        /**
+         * Returns all {@link TemplateVariables} contained in the {@link Link}.
+         * 
+         * @return
+         */
+        @JsonIgnore
+        public List<TemplateVariable> getVariables() {
+                return getUriTemplate().getVariables();
+        }
 
-	/**
-	 * Returns whether the link is templated.
-	 * 
-	 * @return
-	 */
-	public boolean isTemplated() {
-		return !getUriTemplate().getVariables().isEmpty();
-	}
+        /**
+         * Returns whether the link is templated.
+         * 
+         * @return
+         */
+        public boolean isTemplated() {
+                return !getUriTemplate().getVariables().isEmpty();
+        }
 
-	/**
-	 * Turns the current template into a {@link Link} by expanding it using the given parameters.
-	 * 
-	 * @param arguments
-	 * @return
-	 */
-	public Link expand(Object... arguments) {
-		return new Link(getUriTemplate().expand(arguments).toString(), getRel());
-	}
+        /**
+         * Turns the current template into a {@link Link} by expanding it using the given parameters.
+         * 
+         * @param arguments
+         * @return
+         */
+        public Link expand(Object... arguments) {
+                return new Link(getUriTemplate().expand(arguments).toString(), getRel());
+        }
 
-	/**
-	 * Turns the current template into a {@link Link} by expanding it using the given parameters.
-	 * 
-	 * @param arguments must not be {@literal null}.
-	 * @return
-	 */
-	public Link expand(Map<String, ? extends Object> arguments) {
-		return new Link(getUriTemplate().expand(arguments).toString(), getRel());
-	}
+        /**
+         * Turns the current template into a {@link Link} by expanding it using the given parameters.
+         * 
+         * @param arguments must not be {@literal null}.
+         * @return
+         */
+        public Link expand(Map<String, ? extends Object> arguments) {
+                return new Link(getUriTemplate().expand(arguments).toString(), getRel());
+        }
 
-	private UriTemplate getUriTemplate() {
+        private UriTemplate getUriTemplate() {
 
-		if (template == null) {
-			this.template = new UriTemplate(href);
-		}
+                if (template == null) {
+                        this.template = new UriTemplate(href);
+                }
 
-		return template;
-	}
+                return template;
+        }
 
-	/* 
-	 * (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
+        /* 
+         * (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals(Object obj) {
 
-		if (this == obj) {
-			return true;
-		}
+                if (this == obj) {
+                        return true;
+                }
 
-		if (!(obj instanceof Link)) {
-			return false;
-		}
+                if (!(obj instanceof Link)) {
+                        return false;
+                }
 
-		Link that = (Link) obj;
+                Link that = (Link) obj;
 
-		return this.href.equals(that.href) && this.rel.equals(that.rel);
-	}
+                return this.href.equals(that.href) && this.rel.equals(that.rel);
+        }
 
-	/* 
-	 * (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
+        /* 
+         * (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode() {
 
-		int result = 17;
-		result += 31 * href.hashCode();
-		result += 31 * rel.hashCode();
-		if (profile != null) {
-			result += 31 * profile.hashCode();
-		}
-		return result;
-	}
+                int result = 17;
+                result += 31 * href.hashCode();
+                result += 31 * rel.hashCode();
+                if (profile != null) {
+                        result += 31 * profile.hashCode();
+                }
+                return result;
+        }
 
-	/* 
-	 * (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		String tostr = String.format("<%s>;rel=\"%s\"", href, rel);
-		if (this.profile != null) {
-			tostr += String.format(";profile=\"%s\"", profile);
-		}
-		return tostr;
-	}
+        /* 
+         * (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString() {
+                String tostr = String.format("<%s>;rel=\"%s\"", href, rel);
+                if (this.profile != null) {
+                        tostr += String.format(";profile=\"%s\"", profile);
+                }
+                return tostr;
+        }
 
-	/**
-	 * Factory method to easily create {@link Link} instances from RFC-5988 compatible {@link String} representations of a
-	 * link. Will return {@literal null} if an empty or {@literal null} {@link String} is given.
-	 * 
-	 * @param element an RFC-5899 compatible representation of a link.
-	 * @throws IllegalArgumentException if a non-empty {@link String} was given that does not adhere to RFC-5899.
-	 * @throws IllegalArgumentException if no {@code rel} attribute could be found.
-	 * @return
-	 */
-	public static Link valueOf(String element) {
+        /**
+         * Factory method to easily create {@link Link} instances from RFC-5988 compatible {@link String} representations of a
+         * link. Will return {@literal null} if an empty or {@literal null} {@link String} is given.
+         * 
+         * @param element an RFC-5899 compatible representation of a link.
+         * @throws IllegalArgumentException if a non-empty {@link String} was given that does not adhere to RFC-5899.
+         * @throws IllegalArgumentException if no {@code rel} attribute could be found.
+         * @return
+         */
+        public static Link valueOf(String element) {
 
-		if (!StringUtils.hasText(element)) {
-			return null;
-		}
+                if (!StringUtils.hasText(element)) {
+                        return null;
+                }
 
-		Pattern uriAndAttributes = Pattern.compile("<(.*)>;(.*)");
-		Matcher matcher = uriAndAttributes.matcher(element);
+                Pattern uriAndAttributes = Pattern.compile("<(.*)>;(.*)");
+                Matcher matcher = uriAndAttributes.matcher(element);
 
-		if (matcher.find()) {
+                if (matcher.find()) {
 
-			Map<String, String> attributes = getAttributeMap(matcher.group(2));
+                        Map<String, String> attributes = getAttributeMap(matcher.group(2));
 
-			if (!attributes.containsKey("rel")) {
-				throw new IllegalArgumentException("Link does not provide a rel attribute!");
-			}
+                        if (!attributes.containsKey("rel")) {
+                                throw new IllegalArgumentException("Link does not provide a rel attribute!");
+                        }
 
-			return new Link(matcher.group(1), attributes.get("rel"));
+                        return new Link(matcher.group(1), attributes.get("rel"));
 
-		} else {
-			throw new IllegalArgumentException(String.format("Given link header %s is not RFC5988 compliant!", element));
-		}
-	}
+                } else {
+                        throw new IllegalArgumentException(String.format("Given link header %s is not RFC5988 compliant!", element));
+                }
+        }
 
-	/**
-	 * Parses the links attributes from the given source {@link String}.
-	 * 
-	 * @param source
-	 * @return
-	 */
-	private static Map<String, String> getAttributeMap(String source) {
+        /**
+         * Parses the links attributes from the given source {@link String}.
+         * 
+         * @param source
+         * @return
+         */
+        private static Map<String, String> getAttributeMap(String source) {
 
-		if (!StringUtils.hasText(source)) {
-			return Collections.emptyMap();
-		}
+                if (!StringUtils.hasText(source)) {
+                        return Collections.emptyMap();
+                }
 
-		Map<String, String> attributes = new HashMap<String, String>();
-		Pattern keyAndValue = Pattern.compile("(\\w+)=\\\"(\\p{Alnum}*)\"");
-		Matcher matcher = keyAndValue.matcher(source);
+                Map<String, String> attributes = new HashMap<String, String>();
+                Pattern keyAndValue = Pattern.compile("(\\w+)=\\\"(\\p{Alnum}*)\"");
+                Matcher matcher = keyAndValue.matcher(source);
 
-		while (matcher.find()) {
-			attributes.put(matcher.group(1), matcher.group(2));
-		}
+                while (matcher.find()) {
+                        attributes.put(matcher.group(1), matcher.group(2));
+                }
 
-		return attributes;
-	}
+                return attributes;
+        }
 }

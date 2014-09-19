@@ -500,7 +500,7 @@ public class Jackson2HalModule extends SimpleModule {
                         if (profile != null) {
                             result.add(new Link(link.getHref(), relation, profile));
                         } else {
-                            result.add(new Link(link.getHref(), relation));
+                            result.add(new Link(link.getHref(), relation, link.getName(), link.getTitle(), link.getType()));
                         }
                     }
                 } else {
@@ -509,7 +509,7 @@ public class Jackson2HalModule extends SimpleModule {
                     if (profile != null) {
                         result.add(new Link(link.getHref(), relation, profile));
                     } else {
-                        result.add(new Link(link.getHref(), relation));
+                        result.add(new Link(link.getHref(), relation, link.getName(), link.getTitle(), link.getType()));
                     }
                 }
             }
@@ -602,7 +602,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         private static final long serialVersionUID = 4755806754621032622L;
 
-        private JavaType contentType;
+        private final JavaType contentType;
 
         public HalResourcesDeserializer() {
             this(List.class, null);
