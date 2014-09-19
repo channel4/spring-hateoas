@@ -73,7 +73,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 /**
  * Jackson 2 module implementation to render {@link Link} and
  * {@link ResourceSupport} instances in HAL compatible JSON.
- * 
+ *
  * @author Alexander Baetz
  * @author Oliver Gierke
  */
@@ -93,7 +93,7 @@ public class Jackson2HalModule extends SimpleModule {
     /**
      * Returns whether the module was already registered in the given
      * {@link ObjectMapper}.
-     * 
+     *
      * @param mapper
      *            must not be {@literal null}.
      * @return
@@ -107,7 +107,7 @@ public class Jackson2HalModule extends SimpleModule {
     /**
      * Custom {@link JsonSerializer} to render Link instances in HAL compatible
      * JSON.
-     * 
+     *
      * @author Alexander Baetz
      * @author Oliver Gierke
      */
@@ -130,7 +130,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * com.fasterxml.jackson.databind.ser.std.StdSerializer#serialize(java
          * .lang.Object, com.fasterxml.jackson.core.JsonGenerator,
@@ -184,7 +184,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * com.fasterxml.jackson.databind.ser.ContextualSerializer#createContextual
          * (com.fasterxml.jackson.databind.SerializerProvider,
@@ -197,7 +197,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * com.fasterxml.jackson.databind.ser.ContainerSerializer#getContentType
          * ()
@@ -209,7 +209,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see com.fasterxml.jackson.databind.ser.ContainerSerializer#
          * getContentSerializer()
          */
@@ -220,7 +220,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * com.fasterxml.jackson.databind.ser.ContainerSerializer#isEmpty(java
          * .lang.Object)
@@ -232,7 +232,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * com.fasterxml.jackson.databind.ser.ContainerSerializer#hasSingleElement
          * (java.lang.Object)
@@ -244,7 +244,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see com.fasterxml.jackson.databind.ser.ContainerSerializer#
          * _withValueTypeSerializer
          * (com.fasterxml.jackson.databind.jsontype.TypeSerializer)
@@ -259,7 +259,7 @@ public class Jackson2HalModule extends SimpleModule {
      * Custom {@link JsonSerializer} to render Link instances in HAL compatible
      * JSON. Renders the {@link Link} as immediate object if we have a single
      * one or as array if we have multiple ones.
-     * 
+     *
      * @author Alexander Baetz
      * @author Oliver Gierke
      */
@@ -276,7 +276,7 @@ public class Jackson2HalModule extends SimpleModule {
         /**
          * Creates a new {@link OptionalListJackson2Serializer} using the given
          * {@link BeanProperty}.
-         * 
+         *
          * @param property
          */
         public OptionalListJackson2Serializer(BeanProperty property) {
@@ -288,7 +288,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see com.fasterxml.jackson.databind.ser.ContainerSerializer#
          * _withValueTypeSerializer
          * (com.fasterxml.jackson.databind.jsontype.TypeSerializer)
@@ -300,7 +300,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * com.fasterxml.jackson.databind.ser.std.StdSerializer#serialize(java
          * .lang.Object, com.fasterxml.jackson.core.JsonGenerator,
@@ -377,7 +377,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see com.fasterxml.jackson.databind.ser.ContainerSerializer#
          * getContentSerializer()
          */
@@ -388,7 +388,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * com.fasterxml.jackson.databind.ser.ContainerSerializer#getContentType
          * ()
@@ -400,7 +400,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * com.fasterxml.jackson.databind.ser.ContainerSerializer#hasSingleElement
          * (java.lang.Object)
@@ -412,7 +412,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * com.fasterxml.jackson.databind.ser.ContainerSerializer#isEmpty(java
          * .lang.Object)
@@ -424,7 +424,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * com.fasterxml.jackson.databind.ser.ContextualSerializer#createContextual
          * (com.fasterxml.jackson.databind.SerializerProvider,
@@ -447,7 +447,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase
          * #getContentType()
@@ -459,7 +459,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase
          * #getContentDeserializer()
@@ -471,7 +471,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * com.fasterxml.jackson.databind.JsonDeserializer#deserialize(com.fasterxml
          * .jackson.core.JsonParser,
@@ -498,7 +498,7 @@ public class Jackson2HalModule extends SimpleModule {
                         link = jp.readValueAs(Link.class);
                         String profile = link.getProfile();
                         if (profile != null) {
-                            result.add(new Link(link.getHref(), relation, profile));
+                            result.add(new Link(link.getHref(), relation, link.getName(), link.getTitle(), link.getType(), profile));
                         } else {
                             result.add(new Link(link.getHref(), relation, link.getName(), link.getTitle(), link.getType()));
                         }
@@ -507,7 +507,7 @@ public class Jackson2HalModule extends SimpleModule {
                     link = jp.readValueAs(Link.class);
                     String profile = link.getProfile();
                     if (profile != null) {
-                        result.add(new Link(link.getHref(), relation, profile));
+                        result.add(new Link(link.getHref(), relation, link.getName(), link.getTitle(), link.getType(), profile));
                     } else {
                         result.add(new Link(link.getHref(), relation, link.getName(), link.getTitle(), link.getType()));
                     }
@@ -522,7 +522,7 @@ public class Jackson2HalModule extends SimpleModule {
      * Custom {@link JsonSerializer} to render
      * {@link org.springframework.hateoas.Resource}-Lists in HAL compatible
      * JSON. Renders the list as a Map.
-     * 
+     *
      * @author Alexander Baetz
      * @author Oliver Gierke
      */
@@ -621,7 +621,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase
          * #getContentType()
@@ -633,7 +633,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase
          * #getContentDeserializer()
@@ -645,7 +645,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * com.fasterxml.jackson.databind.JsonDeserializer#deserialize(com.fasterxml
          * .jackson.core.JsonParser,
@@ -721,7 +721,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see com.fasterxml.jackson.databind.cfg.HandlerInstantiator#
          * deserializerInstance
          * (com.fasterxml.jackson.databind.DeserializationConfig,
@@ -734,7 +734,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see com.fasterxml.jackson.databind.cfg.HandlerInstantiator#
          * keyDeserializerInstance
          * (com.fasterxml.jackson.databind.DeserializationConfig,
@@ -747,7 +747,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * com.fasterxml.jackson.databind.cfg.HandlerInstantiator#serializerInstance
          * (com.fasterxml.jackson.databind.SerializationConfig,
@@ -760,7 +760,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see com.fasterxml.jackson.databind.cfg.HandlerInstantiator#
          * typeResolverBuilderInstance
          * (com.fasterxml.jackson.databind.cfg.MapperConfig,
@@ -773,7 +773,7 @@ public class Jackson2HalModule extends SimpleModule {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see com.fasterxml.jackson.databind.cfg.HandlerInstantiator#
          * typeIdResolverInstance
          * (com.fasterxml.jackson.databind.cfg.MapperConfig,
@@ -788,7 +788,7 @@ public class Jackson2HalModule extends SimpleModule {
     /**
      * {@link JsonSerializer} to only render {@link Boolean} values if they're
      * set to {@literal true}.
-     * 
+     *
      * @author Oliver Gierke
      * @since 0.9
      */

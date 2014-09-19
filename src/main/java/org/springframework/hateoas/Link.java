@@ -37,7 +37,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * Value object for links.
- * 
+ *
  * @author Oliver Gierke
  */
 @XmlType(name = "link", namespace = Link.ATOM_NAMESPACE)
@@ -64,7 +64,7 @@ public class Link implements Serializable {
 
         /**
          * Creates a new link to the given URI with the self rel.
-         * 
+         *
          * @see #REL_SELF
          * @param href must not be {@literal null} or empty.
          */
@@ -74,7 +74,7 @@ public class Link implements Serializable {
 
         /**
          * Creates a new {@link Link} to the given URI with the given rel.
-         * 
+         *
          * @param href must not be {@literal null} or empty.
          * @param rel must not be {@literal null} or empty.
          */
@@ -84,7 +84,7 @@ public class Link implements Serializable {
 
         /**
          * Creates a new {@link Link} to the given URI with the given rel and the given profile.
-         * 
+         *
          * @param href must not be {@literal null} or empty.
          * @param rel must not be {@literal null} or empty.
          * @param profile must not be {@literal null} or empty.
@@ -92,10 +92,10 @@ public class Link implements Serializable {
         public Link(String href, String rel, String profile) {
                 this(new UriTemplate(href), rel, profile);
         }
-        
+
         /**
          * Creates a new Link from the given {@link UriTemplate} and rel.
-         * 
+         *
          * @param template must not be {@literal null}.
          * @param rel must not be {@literal null} or empty.
          */
@@ -111,7 +111,7 @@ public class Link implements Serializable {
 
         /**
          * Creates a new Link from the given {@link UriTemplate} and rel.
-         * 
+         *
          * @param template must not be {@literal null}.
          * @param rel must not be {@literal null} or empty.
          * @param profile must not be {@literal null} or empty.
@@ -129,9 +129,9 @@ public class Link implements Serializable {
         }
 
         /**
-         * Creates a new {@link Link} to the given URI with the given rel and the 
+         * Creates a new {@link Link} to the given URI with the given rel and the
          * given name, title and type.
-         * 
+         *
          * @param href must not be {@literal null} or empty.
          * @param rel must not be {@literal null} or empty.
          * @param name
@@ -141,10 +141,10 @@ public class Link implements Serializable {
         public Link(String href, String rel, String name, String title, String type) {
             this(new UriTemplate(href), rel, name, title, type);
         }
-        
+
         /**
          * Creates a new Link from the given {@link UriTemplate} and rel.
-         * 
+         *
          * @param template template must not be {@literal null}.
          * @param rel must not be {@literal null} or empty.
          * @param name
@@ -152,10 +152,10 @@ public class Link implements Serializable {
          * @param type
          */
         public Link(UriTemplate template, String rel, String name, String title, String type) {
-    
+
             Assert.notNull(template, "UriTemplate must not be null!");
             Assert.hasText(rel, "Rel must not be null or empty!");
-    
+
             this.template = template;
             this.href = template.toString();
             this.rel = rel;
@@ -163,7 +163,46 @@ public class Link implements Serializable {
             this.title = title;
             this.type = type;
         }
-        
+
+        /**
+         * Creates a new {@link Link} to the given URI with the given rel and the
+         * given name, title, type and profile.
+         *
+         * @param href must not be {@literal null} or empty.
+         * @param rel must not be {@literal null} or empty.
+         * @param name
+         * @param title must not be {@literal null} or empty.
+         * @param type
+         * @param profile
+         */
+        public Link(String href, String rel, String name, String title, String type, String profile) {
+            this(new UriTemplate(href), rel, name, title, type);
+        }
+    
+        /**
+         * Creates a new Link from the given {@link UriTemplate} and rel.
+         *
+         * @param template template must not be {@literal null}.
+         * @param rel must not be {@literal null} or empty.
+         * @param name
+         * @param title must not be {@literal null} or empty.
+         * @param type
+         * @param profile
+         */
+        public Link(UriTemplate template, String rel, String name, String title, String type, String profile) {
+            Assert.notNull(template, "UriTemplate must not be null!");
+            Assert.hasText(rel, "Rel must not be null or empty!");
+            Assert.hasText(profile, "Profile must not be null or empty!");
+    
+            this.template = template;
+            this.href = template.toString();
+            this.rel = rel;
+            this.name = name;
+            this.title = title;
+            this.type = type;
+            this.profile = profile;
+        }
+
         /**
          * Empty constructor required by the marshalling framework.
          */
@@ -173,7 +212,7 @@ public class Link implements Serializable {
 
         /**
          * Returns the actual URI the link is pointing to.
-         * 
+         *
          * @return
          */
         public String getHref() {
@@ -182,7 +221,7 @@ public class Link implements Serializable {
 
         /**
          * Returns the rel of the link.
-         * 
+         *
          * @return
          */
         public String getRel() {
@@ -191,34 +230,34 @@ public class Link implements Serializable {
 
         /**
          * Returns the profile of the link.
-         * 
+         *
          * @return
          */
         public String getProfile() {
                 return profile;
         }
-        
+
         /**
          * Returns the name of the link.
-         * 
+         *
          * @return
          */
         public String getName() {
             return name;
         }
-    
+
         /**
          * Returns the title of the link.
-         * 
+         *
          * @return
          */
         public String getTitle() {
             return title;
         }
-    
+
         /**
           * Returns the type of the link.
-         * 
+         *
          * @return
          */
         public String getType() {
@@ -227,7 +266,7 @@ public class Link implements Serializable {
 
         /**
          * Returns a {@link Link} pointing to the same URI but with the given relation.
-         * 
+         *
          * @param rel must not be {@literal null} or empty.
          * @return
          */
@@ -240,7 +279,7 @@ public class Link implements Serializable {
 
         /**
          * Returns a {@link Link} pointing to the same URI but with the given profile.
-         * 
+         *
          * @param rel must not be {@literal null} or empty.
          * @return
          */
@@ -250,7 +289,7 @@ public class Link implements Serializable {
 
         /**
          * Returns a {@link Link} pointing to the same URI but with the {@code self} relation.
-         * 
+         *
          * @return
          */
         public Link withSelfRel() {
@@ -259,7 +298,7 @@ public class Link implements Serializable {
 
         /**
          * Returns the variable names contained in the template.
-         * 
+         *
          * @return
          */
         @JsonIgnore
@@ -269,7 +308,7 @@ public class Link implements Serializable {
 
         /**
          * Returns all {@link TemplateVariables} contained in the {@link Link}.
-         * 
+         *
          * @return
          */
         @JsonIgnore
@@ -279,7 +318,7 @@ public class Link implements Serializable {
 
         /**
          * Returns whether the link is templated.
-         * 
+         *
          * @return
          */
         public boolean isTemplated() {
@@ -288,7 +327,7 @@ public class Link implements Serializable {
 
         /**
          * Turns the current template into a {@link Link} by expanding it using the given parameters.
-         * 
+         *
          * @param arguments
          * @return
          */
@@ -298,7 +337,7 @@ public class Link implements Serializable {
 
         /**
          * Turns the current template into a {@link Link} by expanding it using the given parameters.
-         * 
+         *
          * @param arguments must not be {@literal null}.
          * @return
          */
@@ -315,7 +354,7 @@ public class Link implements Serializable {
                 return template;
         }
 
-        /* 
+        /*
          * (non-Javadoc)
          * @see java.lang.Object#equals(java.lang.Object)
          */
@@ -335,7 +374,7 @@ public class Link implements Serializable {
                 return this.href.equals(that.href) && this.rel.equals(that.rel);
         }
 
-        /* 
+        /*
          * (non-Javadoc)
          * @see java.lang.Object#hashCode()
          */
@@ -351,7 +390,7 @@ public class Link implements Serializable {
                 return result;
         }
 
-        /* 
+        /*
          * (non-Javadoc)
          * @see java.lang.Object#toString()
          */
@@ -367,7 +406,7 @@ public class Link implements Serializable {
         /**
          * Factory method to easily create {@link Link} instances from RFC-5988 compatible {@link String} representations of a
          * link. Will return {@literal null} if an empty or {@literal null} {@link String} is given.
-         * 
+         *
          * @param element an RFC-5899 compatible representation of a link.
          * @throws IllegalArgumentException if a non-empty {@link String} was given that does not adhere to RFC-5899.
          * @throws IllegalArgumentException if no {@code rel} attribute could be found.
@@ -399,7 +438,7 @@ public class Link implements Serializable {
 
         /**
          * Parses the links attributes from the given source {@link String}.
-         * 
+         *
          * @param source
          * @return
          */
