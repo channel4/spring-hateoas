@@ -3,7 +3,8 @@ This project provides some APIs to ease creating REST representations that follo
 
 ## Channel4 requirements
 This framework is not fulfilling all the requisites for building C4 Microservices, for instance:
-* Links to surface $_links.profile (not supported by Spring Hateoas)
+* Links to surface $_links.rel.profile (not supported by Spring Hateoas)
+* Adding support to image links surfacing $_links.rel.name and $_links.rel.type 
 * When a link is considered a collection, to return always as an array (Hateoas framework renders it based on the number of items within the same rel)
 * When embedding, the object should keep its nature: if it's an array link -> embed as an array, if it's an object -> embeds as an object (introduced 2 new annotations @JsonRelAsArray and @JsonResourceAsArray, and updated logic in Jackson2HalModule.
 
