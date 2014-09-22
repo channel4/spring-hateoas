@@ -159,9 +159,9 @@ public class Link implements Serializable {
             this.template = template;
             this.href = template.toString();
             this.rel = rel;
-            this.name = name;
+            this.name = name != null ? name : ImageName.DEFAULT.getName();
             this.title = title;
-            this.type = type;
+            this.type = type != null ? type : MediaType.IMAGE_JPEG.getContentType();
         }
 
         /**

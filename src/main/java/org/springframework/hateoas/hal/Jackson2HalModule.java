@@ -496,25 +496,40 @@ public class Jackson2HalModule extends SimpleModule {
                 if (JsonToken.START_ARRAY.equals(jp.nextToken())) {
                     while (!JsonToken.END_ARRAY.equals(jp.nextToken())) {
                         link = jp.readValueAs(Link.class);
-                        String profile = link.getProfile();
-                        if (profile != null) {
-                            result.add(new Link(link.getHref(), relation, link.getName(), link.getTitle(), link.getType(), profile));
-                        } else {
+                        if (isImageLink(link)) {
                             result.add(new Link(link.getHref(), relation, link.getName(), link.getTitle(), link.getType()));
+                        } else {
+                            String profile = link.getProfile();
+                            if (profile != null) {
+                                result.add(new Link(link.getHref(), relation, profile));
+                            } else {
+                                result.add(new Link(link.getHref(), relation));
+                            }
                         }
                     }
                 } else {
                     link = jp.readValueAs(Link.class);
-                    String profile = link.getProfile();
-                    if (profile != null) {
-                        result.add(new Link(link.getHref(), relation, link.getName(), link.getTitle(), link.getType(), profile));
-                    } else {
+                    if (isImageLink(link)) {
                         result.add(new Link(link.getHref(), relation, link.getName(), link.getTitle(), link.getType()));
+                    } else {
+                        String profile = link.getProfile();
+                        if (profile != null) {
+                            result.add(new Link(link.getHref(), relation, profile));
+                        } else {
+                            result.add(new Link(link.getHref(), relation));
+                        }
                     }
                 }
             }
 
             return result;
+        }
+
+        private boolean isImageLink(Link link) {
+            if (link.getTitle() != null) {
+                return true;
+            }
+            return false;
         }
     }
 
