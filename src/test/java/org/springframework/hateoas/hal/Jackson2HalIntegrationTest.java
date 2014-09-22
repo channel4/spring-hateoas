@@ -15,8 +15,8 @@
  */
 package org.springframework.hateoas.hal;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,340 +48,352 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class Jackson2HalIntegrationTest extends AbstractJackson2MarshallingIntegrationTest {
 
-	static final String SINGLE_LINK_REFERENCE = "{\"_links\":{\"self\":{\"href\":\"localhost\"}}}";
-	static final String LIST_LINK_REFERENCE = "{\"_links\":{\"self\":[{\"href\":\"localhost\"},{\"href\":\"localhost2\"}]}}";
+    static final String SINGLE_LINK_REFERENCE = "{\"_links\":{\"self\":{\"href\":\"localhost\"}}}";
 
-	static final String SIMPLE_EMBEDDED_RESOURCE_REFERENCE = "{\"_links\":{\"self\":{\"href\":\"localhost\"}},\"_embedded\":{\"content\":[\"first\",\"second\"]}}";
-	static final String SINGLE_EMBEDDED_RESOURCE_REFERENCE = "{\"_links\":{\"self\":{\"href\":\"localhost\"}},\"_embedded\":{\"content\":[{\"text\":\"test1\",\"number\":1,\"_links\":{\"self\":{\"href\":\"localhost\"}}}]}}";
-	static final String LIST_EMBEDDED_RESOURCE_REFERENCE = "{\"_links\":{\"self\":{\"href\":\"localhost\"}},\"_embedded\":{\"content\":[{\"text\":\"test1\",\"number\":1,\"_links\":{\"self\":{\"href\":\"localhost\"}}},{\"text\":\"test2\",\"number\":2,\"_links\":{\"self\":{\"href\":\"localhost\"}}}]}}";
+    static final String LIST_LINK_REFERENCE = "{\"_links\":{\"self\":[{\"href\":\"localhost\"},{\"href\":\"localhost2\"}]}}";
 
-	static final String ANNOTATED_EMBEDDED_RESOURCE_REFERENCE = "{\"_links\":{\"self\":{\"href\":\"localhost\"}},\"_embedded\":{\"pojos\":[{\"text\":\"test1\",\"number\":1,\"_links\":{\"self\":{\"href\":\"localhost\"}}}]}}";
-	static final String ANNOTATED_EMBEDDED_RESOURCES_REFERENCE = "{\"_embedded\":{\"pojos\":[{\"text\":\"test1\",\"number\":1,\"_links\":{\"self\":{\"href\":\"localhost\"}}},{\"text\":\"test2\",\"number\":2,\"_links\":{\"self\":{\"href\":\"localhost\"}}}]}}";
+    static final String SIMPLE_EMBEDDED_RESOURCE_REFERENCE = "{\"_links\":{\"self\":{\"href\":\"localhost\"}},\"_embedded\":{\"content\":[\"first\",\"second\"]}}";
 
-	static final String ANNOTATED_PAGED_RESOURCES = "{\"_links\":{\"next\":{\"href\":\"foo\"},\"prev\":{\"href\":\"bar\"}},\"_embedded\":{\"pojos\":[{\"text\":\"test1\",\"number\":1,\"_links\":{\"self\":{\"href\":\"localhost\"}}},{\"text\":\"test2\",\"number\":2,\"_links\":{\"self\":{\"href\":\"localhost\"}}}]},\"page\":{\"size\":2,\"totalElements\":4,\"totalPages\":2,\"number\":0}}";
+    // FIXME: Now a single embedded resource is always rendered in singluar
+    // static final String SINGLE_EMBEDDED_RESOURCE_REFERENCE =
+    // "{\"_links\":{\"self\":{\"href\":\"localhost\"}},\"_embedded\":{\"content\":[{\"text\":\"test1\",\"number\":1,\"_links\":{\"self\":{\"href\":\"localhost\"}}}]}}";
+    static final String SINGLE_EMBEDDED_RESOURCE_REFERENCE = "{\"_links\":{\"self\":{\"href\":\"localhost\"}},\"_embedded\":{\"content\":{\"text\":\"test1\",\"number\":1,\"_links\":{\"self\":{\"href\":\"localhost\"}}}}}";
 
-	static final Links PAGINATION_LINKS = new Links(new Link("foo", Link.REL_NEXT), new Link("bar", Link.REL_PREVIOUS));
+    static final String LIST_EMBEDDED_RESOURCE_REFERENCE = "{\"_links\":{\"self\":{\"href\":\"localhost\"}},\"_embedded\":{\"content\":[{\"text\":\"test1\",\"number\":1,\"_links\":{\"self\":{\"href\":\"localhost\"}}},{\"text\":\"test2\",\"number\":2,\"_links\":{\"self\":{\"href\":\"localhost\"}}}]}}";
 
-	static final String CURIED_DOCUMENT = "{\"_links\":{\"self\":{\"href\":\"foo\"},\"foo:myrel\":{\"href\":\"bar\"},\"curies\":[{\"href\":\"http://localhost:8080/rels/{rel}\",\"name\":\"foo\",\"templated\":true}]}}";
-	static final String MULTIPLE_CURIES_DOCUMENT = "{\"_links\":{\"default:myrel\":{\"href\":\"foo\"},\"curies\":[{\"href\":\"bar\",\"name\":\"foo\"},{\"href\":\"foo\",\"name\":\"bar\"}]}}";
-	static final String SINGLE_NON_CURIE_LINK = "{\"_links\":{\"self\":{\"href\":\"foo\"}}}";
-	static final String EMPTY_DOCUMENT = "{}";
+    // FIXME: Now a single embedded resource is always rendered in singluar
+    // static final String ANNOTATED_EMBEDDED_RESOURCE_REFERENCE =
+    // "{\"_links\":{\"self\":{\"href\":\"localhost\"}},\"_embedded\":{\"pojos\":[{\"text\":\"test1\",\"number\":1,\"_links\":{\"self\":{\"href\":\"localhost\"}}}]}}";
+    static final String ANNOTATED_EMBEDDED_RESOURCE_REFERENCE = "{\"_links\":{\"self\":{\"href\":\"localhost\"}},\"_embedded\":{\"pojo\":{\"text\":\"test1\",\"number\":1,\"_links\":{\"self\":{\"href\":\"localhost\"}}}}}";
 
-	static final String LINK_TEMPLATE = "{\"_links\":{\"search\":{\"href\":\"/foo{?bar}\",\"templated\":true}}}";
+    static final String ANNOTATED_EMBEDDED_RESOURCES_REFERENCE = "{\"_embedded\":{\"pojos\":[{\"text\":\"test1\",\"number\":1,\"_links\":{\"self\":{\"href\":\"localhost\"}}},{\"text\":\"test2\",\"number\":2,\"_links\":{\"self\":{\"href\":\"localhost\"}}}]}}";
 
-	@Before
-	public void setUpModule() {
+    static final String ANNOTATED_PAGED_RESOURCES = "{\"_links\":{\"next\":{\"href\":\"foo\"},\"prev\":{\"href\":\"bar\"}},\"_embedded\":{\"pojos\":[{\"text\":\"test1\",\"number\":1,\"_links\":{\"self\":{\"href\":\"localhost\"}}},{\"text\":\"test2\",\"number\":2,\"_links\":{\"self\":{\"href\":\"localhost\"}}}]},\"page\":{\"size\":2,\"totalElements\":4,\"totalPages\":2,\"number\":0}}";
 
-		mapper.registerModule(new Jackson2HalModule());
-		mapper.setHandlerInstantiator(new HalHandlerInstantiator(new AnnotationRelProvider(), null));
-	}
+    static final Links PAGINATION_LINKS = new Links(new Link("foo", Link.REL_NEXT), new Link("bar", Link.REL_PREVIOUS));
 
-	/**
-	 * @see #29
-	 */
-	@Test
-	public void rendersSingleLinkAsObject() throws Exception {
+    static final String CURIED_DOCUMENT = "{\"_links\":{\"self\":{\"href\":\"foo\"},\"foo:myrel\":{\"href\":\"bar\"},\"curies\":[{\"href\":\"http://localhost:8080/rels/{rel}\",\"name\":\"foo\",\"templated\":true}]}}";
 
-		ResourceSupport resourceSupport = new ResourceSupport();
-		resourceSupport.add(new Link("localhost"));
+    static final String MULTIPLE_CURIES_DOCUMENT = "{\"_links\":{\"default:myrel\":{\"href\":\"foo\"},\"curies\":[{\"href\":\"bar\",\"name\":\"foo\"},{\"href\":\"foo\",\"name\":\"bar\"}]}}";
 
-		assertThat(write(resourceSupport), is(SINGLE_LINK_REFERENCE));
-	}
+    static final String SINGLE_NON_CURIE_LINK = "{\"_links\":{\"self\":{\"href\":\"foo\"}}}";
 
-	@Test
-	public void deserializeSingleLink() throws Exception {
-		ResourceSupport expected = new ResourceSupport();
-		expected.add(new Link("localhost"));
-		assertThat(read(SINGLE_LINK_REFERENCE, ResourceSupport.class), is(expected));
-	}
+    static final String EMPTY_DOCUMENT = "{}";
 
-	/**
-	 * @see #29
-	 */
-	@Test
-	public void rendersMultipleLinkAsArray() throws Exception {
+    static final String LINK_TEMPLATE = "{\"_links\":{\"search\":{\"href\":\"/foo{?bar}\",\"templated\":true}}}";
 
-		ResourceSupport resourceSupport = new ResourceSupport();
-		resourceSupport.add(new Link("localhost"));
-		resourceSupport.add(new Link("localhost2"));
+    @Before
+    public void setUpModule() {
 
-		assertThat(write(resourceSupport), is(LIST_LINK_REFERENCE));
-	}
+        mapper.registerModule(new Jackson2HalModule());
+        mapper.setHandlerInstantiator(new HalHandlerInstantiator(new AnnotationRelProvider(), null));
+    }
 
-	@Test
-	public void deserializeMultipleLinks() throws Exception {
+    /**
+     * @see #29
+     */
+    @Test
+    public void rendersSingleLinkAsObject() throws Exception {
 
-		ResourceSupport expected = new ResourceSupport();
-		expected.add(new Link("localhost"));
-		expected.add(new Link("localhost2"));
+        ResourceSupport resourceSupport = new ResourceSupport();
+        resourceSupport.add(new Link("localhost"));
 
-		assertThat(read(LIST_LINK_REFERENCE, ResourceSupport.class), is(expected));
-	}
+        assertThat(write(resourceSupport), is(SINGLE_LINK_REFERENCE));
+    }
 
-	@Test
-	public void rendersSimpleResourcesAsEmbedded() throws Exception {
+    @Test
+    public void deserializeSingleLink() throws Exception {
+        ResourceSupport expected = new ResourceSupport();
+        expected.add(new Link("localhost"));
+        assertThat(read(SINGLE_LINK_REFERENCE, ResourceSupport.class), is(expected));
+    }
 
-		List<String> content = new ArrayList<String>();
-		content.add("first");
-		content.add("second");
+    /**
+     * @see #29
+     */
+    @Test
+    public void rendersMultipleLinkAsArray() throws Exception {
 
-		Resources<String> resources = new Resources<String>(content);
-		resources.add(new Link("localhost"));
+        ResourceSupport resourceSupport = new ResourceSupport();
+        resourceSupport.add(new Link("localhost"));
+        resourceSupport.add(new Link("localhost2"));
 
-		assertThat(write(resources), is(SIMPLE_EMBEDDED_RESOURCE_REFERENCE));
-	}
+        assertThat(write(resourceSupport), is(LIST_LINK_REFERENCE));
+    }
 
-	@Test
-	public void deserializesSimpleResourcesAsEmbedded() throws Exception {
+    @Test
+    public void deserializeMultipleLinks() throws Exception {
 
-		List<String> content = new ArrayList<String>();
-		content.add("first");
-		content.add("second");
+        ResourceSupport expected = new ResourceSupport();
+        expected.add(new Link("localhost"));
+        expected.add(new Link("localhost2"));
 
-		Resources<String> expected = new Resources<String>(content);
-		expected.add(new Link("localhost"));
+        assertThat(read(LIST_LINK_REFERENCE, ResourceSupport.class), is(expected));
+    }
 
-		Resources<String> result = mapper.readValue(SIMPLE_EMBEDDED_RESOURCE_REFERENCE, mapper.getTypeFactory()
-				.constructParametricType(Resources.class, String.class));
+    @Test
+    public void rendersSimpleResourcesAsEmbedded() throws Exception {
 
-		assertThat(result, is(expected));
+        List<String> content = new ArrayList<String>();
+        content.add("first");
+        content.add("second");
 
-	}
+        Resources<String> resources = new Resources<String>(content);
+        resources.add(new Link("localhost"));
 
-	@Test
-	public void rendersSingleResourceResourcesAsEmbedded() throws Exception {
+        assertThat(write(resources), is(SIMPLE_EMBEDDED_RESOURCE_REFERENCE));
+    }
 
-		List<Resource<SimplePojo>> content = new ArrayList<Resource<SimplePojo>>();
-		content.add(new Resource<SimplePojo>(new SimplePojo("test1", 1), new Link("localhost")));
+    @Test
+    public void deserializesSimpleResourcesAsEmbedded() throws Exception {
 
-		Resources<Resource<SimplePojo>> resources = new Resources<Resource<SimplePojo>>(content);
-		resources.add(new Link("localhost"));
+        List<String> content = new ArrayList<String>();
+        content.add("first");
+        content.add("second");
 
-		assertThat(write(resources), is(SINGLE_EMBEDDED_RESOURCE_REFERENCE));
-	}
+        Resources<String> expected = new Resources<String>(content);
+        expected.add(new Link("localhost"));
 
-	@Test
-	public void deserializesSingleResourceResourcesAsEmbedded() throws Exception {
+        Resources<String> result = mapper.readValue(SIMPLE_EMBEDDED_RESOURCE_REFERENCE, mapper.getTypeFactory()
+                .constructParametricType(Resources.class, String.class));
 
-		List<Resource<SimplePojo>> content = new ArrayList<Resource<SimplePojo>>();
-		content.add(new Resource<SimplePojo>(new SimplePojo("test1", 1), new Link("localhost")));
+        assertThat(result, is(expected));
 
-		Resources<Resource<SimplePojo>> expected = new Resources<Resource<SimplePojo>>(content);
-		expected.add(new Link("localhost"));
+    }
 
-		Resources<Resource<SimplePojo>> result = mapper.readValue(
-				SINGLE_EMBEDDED_RESOURCE_REFERENCE,
-				mapper.getTypeFactory().constructParametricType(Resources.class,
-						mapper.getTypeFactory().constructParametricType(Resource.class, SimplePojo.class)));
-
-		assertThat(result, is(expected));
-
-	}
-
-	@Test
-	public void rendersMultipleResourceResourcesAsEmbedded() throws Exception {
+    @Test
+    public void rendersSingleResourceResourcesAsEmbedded() throws Exception {
 
-		Resources<Resource<SimplePojo>> resources = setupResources();
-		resources.add(new Link("localhost"));
-
-		assertThat(write(resources), is(LIST_EMBEDDED_RESOURCE_REFERENCE));
-	}
-
-	@Test
-	public void deserializesMultipleResourceResourcesAsEmbedded() throws Exception {
-
-		Resources<Resource<SimplePojo>> expected = setupResources();
-		expected.add(new Link("localhost"));
+        List<Resource<SimplePojo>> content = new ArrayList<Resource<SimplePojo>>();
+        content.add(new Resource<SimplePojo>(new SimplePojo("test1", 1), new Link("localhost")));
 
-		Resources<Resource<SimplePojo>> result = mapper.readValue(
-				LIST_EMBEDDED_RESOURCE_REFERENCE,
-				mapper.getTypeFactory().constructParametricType(Resources.class,
-						mapper.getTypeFactory().constructParametricType(Resource.class, SimplePojo.class)));
-
-		assertThat(result, is(expected));
-	}
-
-	/**
-	 * @see #47, #60
-	 */
-	@Test
-	public void serializesAnnotatedResourceResourcesAsEmbedded() throws Exception {
-
-		List<Resource<SimpleAnnotatedPojo>> content = new ArrayList<Resource<SimpleAnnotatedPojo>>();
-		content.add(new Resource<SimpleAnnotatedPojo>(new SimpleAnnotatedPojo("test1", 1), new Link("localhost")));
-
-		Resources<Resource<SimpleAnnotatedPojo>> resources = new Resources<Resource<SimpleAnnotatedPojo>>(content);
-		resources.add(new Link("localhost"));
-
-		assertThat(write(resources), is(ANNOTATED_EMBEDDED_RESOURCE_REFERENCE));
-	}
-
-	/**
-	 * @see #47, #60
-	 */
-	@Test
-	public void deserializesAnnotatedResourceResourcesAsEmbedded() throws Exception {
-
-		List<Resource<SimpleAnnotatedPojo>> content = new ArrayList<Resource<SimpleAnnotatedPojo>>();
-		content.add(new Resource<SimpleAnnotatedPojo>(new SimpleAnnotatedPojo("test1", 1), new Link("localhost")));
-
-		Resources<Resource<SimpleAnnotatedPojo>> expected = new Resources<Resource<SimpleAnnotatedPojo>>(content);
-		expected.add(new Link("localhost"));
-
-		Resources<Resource<SimpleAnnotatedPojo>> result = mapper.readValue(
-				ANNOTATED_EMBEDDED_RESOURCE_REFERENCE,
-				mapper.getTypeFactory().constructParametricType(Resources.class,
-						mapper.getTypeFactory().constructParametricType(Resource.class, SimpleAnnotatedPojo.class)));
-
-		assertThat(result, is(expected));
-	}
-
-	/**
-	 * @see #63
-	 */
-	@Test
-	public void serializesMultipleAnnotatedResourceResourcesAsEmbedded() throws Exception {
-		assertThat(write(setupAnnotatedResources()), is(ANNOTATED_EMBEDDED_RESOURCES_REFERENCE));
-	}
-
-	/**
-	 * @see #63
-	 */
-	@Test
-	public void deserializesMultipleAnnotatedResourceResourcesAsEmbedded() throws Exception {
-
-		Resources<Resource<SimpleAnnotatedPojo>> result = mapper.readValue(
-				ANNOTATED_EMBEDDED_RESOURCES_REFERENCE,
-				mapper.getTypeFactory().constructParametricType(Resources.class,
-						mapper.getTypeFactory().constructParametricType(Resource.class, SimpleAnnotatedPojo.class)));
-
-		assertThat(result, is(setupAnnotatedResources()));
-	}
-
-	/**
-	 * @see #63
-	 */
-	@Test
-	public void serializesPagedResource() throws Exception {
-		assertThat(write(setupAnnotatedPagedResources()), is(ANNOTATED_PAGED_RESOURCES));
-	}
+        Resources<Resource<SimplePojo>> resources = new Resources<Resource<SimplePojo>>(content);
+        resources.add(new Link("localhost"));
 
-	/**
-	 * @see #64
-	 */
-	@Test
-	public void deserializesPagedResource() throws Exception {
-		PagedResources<Resource<SimpleAnnotatedPojo>> result = mapper.readValue(
-				ANNOTATED_PAGED_RESOURCES,
-				mapper.getTypeFactory().constructParametricType(PagedResources.class,
-						mapper.getTypeFactory().constructParametricType(Resource.class, SimpleAnnotatedPojo.class)));
+        assertThat(write(resources), is(SINGLE_EMBEDDED_RESOURCE_REFERENCE));
+    }
 
-		assertThat(result, is(setupAnnotatedPagedResources()));
-	}
+    @Test
+    public void deserializesSingleResourceResourcesAsEmbedded() throws Exception {
 
-	/**
-	 * @see #125
-	 */
-	@Test
-	public void rendersCuriesCorrectly() throws Exception {
+        List<Resource<SimplePojo>> content = new ArrayList<Resource<SimplePojo>>();
+        content.add(new Resource<SimplePojo>(new SimplePojo("test1", 1), new Link("localhost")));
 
-		Resources<Object> resources = new Resources<Object>(Collections.emptySet(), new Link("foo"), new Link("bar",
-				"myrel"));
+        Resources<Resource<SimplePojo>> expected = new Resources<Resource<SimplePojo>>(content);
+        expected.add(new Link("localhost"));
 
-		assertThat(getCuriedObjectMapper().writeValueAsString(resources), is(CURIED_DOCUMENT));
-	}
+        Resources<Resource<SimplePojo>> result = mapper.readValue(
+                SINGLE_EMBEDDED_RESOURCE_REFERENCE,
+                mapper.getTypeFactory().constructParametricType(Resources.class,
+                        mapper.getTypeFactory().constructParametricType(Resource.class, SimplePojo.class)));
 
-	/**
-	 * @see #125
-	 */
-	@Test
-	public void doesNotRenderCuriesIfNoLinkIsPresent() throws Exception {
+        assertThat(result, is(expected));
 
-		Resources<Object> resources = new Resources<Object>(Collections.emptySet());
-		assertThat(getCuriedObjectMapper().writeValueAsString(resources), is(EMPTY_DOCUMENT));
-	}
+    }
 
-	/**
-	 * @see #125
-	 */
-	@Test
-	public void doesNotRenderCuriesIfNoCurieLinkIsPresent() throws Exception {
+    @Test
+    public void rendersMultipleResourceResourcesAsEmbedded() throws Exception {
 
-		Resources<Object> resources = new Resources<Object>(Collections.emptySet());
-		resources.add(new Link("foo"));
+        Resources<Resource<SimplePojo>> resources = setupResources();
+        resources.add(new Link("localhost"));
 
-		assertThat(getCuriedObjectMapper().writeValueAsString(resources), is(SINGLE_NON_CURIE_LINK));
-	}
+        assertThat(write(resources), is(LIST_EMBEDDED_RESOURCE_REFERENCE));
+    }
 
-	/**
-	 * @see #137
-	 */
-	@Test
-	public void rendersTemplate() throws Exception {
+    @Test
+    public void deserializesMultipleResourceResourcesAsEmbedded() throws Exception {
 
-		ResourceSupport support = new ResourceSupport();
-		support.add(new Link("/foo{?bar}", "search"));
+        Resources<Resource<SimplePojo>> expected = setupResources();
+        expected.add(new Link("localhost"));
 
-		assertThat(write(support), is(LINK_TEMPLATE));
-	}
+        Resources<Resource<SimplePojo>> result = mapper.readValue(
+                LIST_EMBEDDED_RESOURCE_REFERENCE,
+                mapper.getTypeFactory().constructParametricType(Resources.class,
+                        mapper.getTypeFactory().constructParametricType(Resource.class, SimplePojo.class)));
 
-	/**
-	 * @see #142
-	 */
-	@Test
-	public void rendersMultipleCuries() throws Exception {
+        assertThat(result, is(expected));
+    }
 
-		Resources<Object> resources = new Resources<Object>(Collections.emptySet());
-		resources.add(new Link("foo", "myrel"));
+    /**
+     * @see #47, #60
+     */
+    @Test
+    public void serializesAnnotatedResourceResourcesAsEmbedded() throws Exception {
 
-		CurieProvider provider = new DefaultCurieProvider("default", new UriTemplate("/doc{?rel}")) {
-			@Override
-			public Collection<? extends Object> getCurieInformation(Links links) {
-				return Arrays.asList(new Curie("foo", "bar"), new Curie("bar", "foo"));
-			}
-		};
+        List<Resource<SimpleAnnotatedPojo>> content = new ArrayList<Resource<SimpleAnnotatedPojo>>();
+        content.add(new Resource<SimpleAnnotatedPojo>(new SimpleAnnotatedPojo("test1", 1), new Link("localhost")));
 
-		assertThat(getCuriedObjectMapper(provider).writeValueAsString(resources), is(MULTIPLE_CURIES_DOCUMENT));
-	}
+        Resources<Resource<SimpleAnnotatedPojo>> resources = new Resources<Resource<SimpleAnnotatedPojo>>(content);
+        resources.add(new Link("localhost"));
 
-	private static Resources<Resource<SimpleAnnotatedPojo>> setupAnnotatedPagedResources() {
+        assertThat(write(resources), is(ANNOTATED_EMBEDDED_RESOURCE_REFERENCE));
+    }
 
-		List<Resource<SimpleAnnotatedPojo>> content = new ArrayList<Resource<SimpleAnnotatedPojo>>();
-		content.add(new Resource<SimpleAnnotatedPojo>(new SimpleAnnotatedPojo("test1", 1), new Link("localhost")));
-		content.add(new Resource<SimpleAnnotatedPojo>(new SimpleAnnotatedPojo("test2", 2), new Link("localhost")));
+    /**
+     * @see #47, #60
+     */
+    @Test
+    public void deserializesAnnotatedResourceResourcesAsEmbedded() throws Exception {
 
-		return new PagedResources<Resource<SimpleAnnotatedPojo>>(content, new PageMetadata(2, 0, 4), PAGINATION_LINKS);
-	}
+        List<Resource<SimpleAnnotatedPojo>> content = new ArrayList<Resource<SimpleAnnotatedPojo>>();
+        content.add(new Resource<SimpleAnnotatedPojo>(new SimpleAnnotatedPojo("test1", 1), new Link("localhost")));
 
-	private static Resources<Resource<SimpleAnnotatedPojo>> setupAnnotatedResources() {
+        Resources<Resource<SimpleAnnotatedPojo>> expected = new Resources<Resource<SimpleAnnotatedPojo>>(content);
+        expected.add(new Link("localhost"));
 
-		List<Resource<SimpleAnnotatedPojo>> content = new ArrayList<Resource<SimpleAnnotatedPojo>>();
-		content.add(new Resource<SimpleAnnotatedPojo>(new SimpleAnnotatedPojo("test1", 1), new Link("localhost")));
-		content.add(new Resource<SimpleAnnotatedPojo>(new SimpleAnnotatedPojo("test2", 2), new Link("localhost")));
+        Resources<Resource<SimpleAnnotatedPojo>> result = mapper.readValue(
+                ANNOTATED_EMBEDDED_RESOURCE_REFERENCE,
+                mapper.getTypeFactory().constructParametricType(Resources.class,
+                        mapper.getTypeFactory().constructParametricType(Resource.class, SimpleAnnotatedPojo.class)));
 
-		return new Resources<Resource<SimpleAnnotatedPojo>>(content);
-	}
+        assertThat(result, is(expected));
+    }
 
-	private static Resources<Resource<SimplePojo>> setupResources() {
+    /**
+     * @see #63
+     */
+    @Test
+    public void serializesMultipleAnnotatedResourceResourcesAsEmbedded() throws Exception {
+        assertThat(write(setupAnnotatedResources()), is(ANNOTATED_EMBEDDED_RESOURCES_REFERENCE));
+    }
 
-		List<Resource<SimplePojo>> content = new ArrayList<Resource<SimplePojo>>();
-		content.add(new Resource<SimplePojo>(new SimplePojo("test1", 1), new Link("localhost")));
-		content.add(new Resource<SimplePojo>(new SimplePojo("test2", 2), new Link("localhost")));
+    /**
+     * @see #63
+     */
+    @Test
+    public void deserializesMultipleAnnotatedResourceResourcesAsEmbedded() throws Exception {
 
-		return new Resources<Resource<SimplePojo>>(content);
-	}
+        Resources<Resource<SimpleAnnotatedPojo>> result = mapper.readValue(
+                ANNOTATED_EMBEDDED_RESOURCES_REFERENCE,
+                mapper.getTypeFactory().constructParametricType(Resources.class,
+                        mapper.getTypeFactory().constructParametricType(Resource.class, SimpleAnnotatedPojo.class)));
 
-	private static ObjectMapper getCuriedObjectMapper() {
+        assertThat(result, is(setupAnnotatedResources()));
+    }
 
-		return getCuriedObjectMapper(new DefaultCurieProvider("foo", new UriTemplate("http://localhost:8080/rels/{rel}")));
-	}
+    /**
+     * @see #63
+     */
+    @Test
+    public void serializesPagedResource() throws Exception {
+        assertThat(write(setupAnnotatedPagedResources()), is(ANNOTATED_PAGED_RESOURCES));
+    }
 
-	private static ObjectMapper getCuriedObjectMapper(CurieProvider provider) {
+    /**
+     * @see #64
+     */
+    @Test
+    public void deserializesPagedResource() throws Exception {
+        PagedResources<Resource<SimpleAnnotatedPojo>> result = mapper.readValue(
+                ANNOTATED_PAGED_RESOURCES,
+                mapper.getTypeFactory().constructParametricType(PagedResources.class,
+                        mapper.getTypeFactory().constructParametricType(Resource.class, SimpleAnnotatedPojo.class)));
 
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(new Jackson2HalModule());
-		mapper.setHandlerInstantiator(new HalHandlerInstantiator(new AnnotationRelProvider(), provider));
+        assertThat(result, is(setupAnnotatedPagedResources()));
+    }
 
-		return mapper;
-	}
+    /**
+     * @see #125
+     */
+    @Test
+    public void rendersCuriesCorrectly() throws Exception {
+
+        Resources<Object> resources = new Resources<Object>(Collections.emptySet(), new Link("foo"), new Link("bar", "myrel"));
+
+        assertThat(getCuriedObjectMapper().writeValueAsString(resources), is(CURIED_DOCUMENT));
+    }
+
+    /**
+     * @see #125
+     */
+    @Test
+    public void doesNotRenderCuriesIfNoLinkIsPresent() throws Exception {
+
+        Resources<Object> resources = new Resources<Object>(Collections.emptySet());
+        assertThat(getCuriedObjectMapper().writeValueAsString(resources), is(EMPTY_DOCUMENT));
+    }
+
+    /**
+     * @see #125
+     */
+    @Test
+    public void doesNotRenderCuriesIfNoCurieLinkIsPresent() throws Exception {
+
+        Resources<Object> resources = new Resources<Object>(Collections.emptySet());
+        resources.add(new Link("foo"));
+
+        assertThat(getCuriedObjectMapper().writeValueAsString(resources), is(SINGLE_NON_CURIE_LINK));
+    }
+
+    /**
+     * @see #137
+     */
+    @Test
+    public void rendersTemplate() throws Exception {
+
+        ResourceSupport support = new ResourceSupport();
+        support.add(new Link("/foo{?bar}", "search"));
+
+        assertThat(write(support), is(LINK_TEMPLATE));
+    }
+
+    /**
+     * @see #142
+     */
+    @Test
+    public void rendersMultipleCuries() throws Exception {
+
+        Resources<Object> resources = new Resources<Object>(Collections.emptySet());
+        resources.add(new Link("foo", "myrel"));
+
+        CurieProvider provider = new DefaultCurieProvider("default", new UriTemplate("/doc{?rel}")) {
+            @Override
+            public Collection<? extends Object> getCurieInformation(Links links) {
+                return Arrays.asList(new Curie("foo", "bar"), new Curie("bar", "foo"));
+            }
+        };
+
+        assertThat(getCuriedObjectMapper(provider).writeValueAsString(resources), is(MULTIPLE_CURIES_DOCUMENT));
+    }
+
+    private static Resources<Resource<SimpleAnnotatedPojo>> setupAnnotatedPagedResources() {
+
+        List<Resource<SimpleAnnotatedPojo>> content = new ArrayList<Resource<SimpleAnnotatedPojo>>();
+        content.add(new Resource<SimpleAnnotatedPojo>(new SimpleAnnotatedPojo("test1", 1), new Link("localhost")));
+        content.add(new Resource<SimpleAnnotatedPojo>(new SimpleAnnotatedPojo("test2", 2), new Link("localhost")));
+
+        return new PagedResources<Resource<SimpleAnnotatedPojo>>(content, new PageMetadata(2, 0, 4), PAGINATION_LINKS);
+    }
+
+    private static Resources<Resource<SimpleAnnotatedPojo>> setupAnnotatedResources() {
+
+        List<Resource<SimpleAnnotatedPojo>> content = new ArrayList<Resource<SimpleAnnotatedPojo>>();
+        content.add(new Resource<SimpleAnnotatedPojo>(new SimpleAnnotatedPojo("test1", 1), new Link("localhost")));
+        content.add(new Resource<SimpleAnnotatedPojo>(new SimpleAnnotatedPojo("test2", 2), new Link("localhost")));
+
+        return new Resources<Resource<SimpleAnnotatedPojo>>(content);
+    }
+
+    private static Resources<Resource<SimplePojo>> setupResources() {
+
+        List<Resource<SimplePojo>> content = new ArrayList<Resource<SimplePojo>>();
+        content.add(new Resource<SimplePojo>(new SimplePojo("test1", 1), new Link("localhost")));
+        content.add(new Resource<SimplePojo>(new SimplePojo("test2", 2), new Link("localhost")));
+
+        return new Resources<Resource<SimplePojo>>(content);
+    }
+
+    private static ObjectMapper getCuriedObjectMapper() {
+
+        return getCuriedObjectMapper(new DefaultCurieProvider("foo", new UriTemplate("http://localhost:8080/rels/{rel}")));
+    }
+
+    private static ObjectMapper getCuriedObjectMapper(CurieProvider provider) {
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new Jackson2HalModule());
+        mapper.setHandlerInstantiator(new HalHandlerInstantiator(new AnnotationRelProvider(), provider));
+
+        return mapper;
+    }
 }
