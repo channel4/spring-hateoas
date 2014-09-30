@@ -26,8 +26,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.hateoas.ImageName;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Links;
+import org.springframework.hateoas.MediaType;
 import org.springframework.hateoas.RelProvider;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.Resources;
@@ -497,26 +499,30 @@ public class Jackson2HalModule extends SimpleModule {
                     while (!JsonToken.END_ARRAY.equals(jp.nextToken())) {
                         link = jp.readValueAs(Link.class);
                         if (isImageLink(link)) {
-                            result.add(new Link(link.getHref(), relation, link.getName(), link.getTitle(), link.getType()));
+                            String name = link.getName() != null ? link.getName() : ImageName.DEFAULT.getName();
+                            String type = link.getType() != null ? link.getType() : MediaType.IMAGE_JPEG.getContentType();
+                            result.add(new Link(link.getHref(), relation, name, link.getTitle(), type));
                         } else {
                             String profile = link.getProfile();
                             if (profile != null) {
-                                result.add(new Link(link.getHref(), relation, profile));
+                                result.add(new Link(link.getHref(), relation, profile, link.getName()));
                             } else {
-                                result.add(new Link(link.getHref(), relation));
+                                result.add(new Link(link.getHref(), relation, link.getName(), link.getTitle(), link.getType()));
                             }
                         }
                     }
                 } else {
                     link = jp.readValueAs(Link.class);
                     if (isImageLink(link)) {
-                        result.add(new Link(link.getHref(), relation, link.getName(), link.getTitle(), link.getType()));
+                        String name = link.getName() != null ? link.getName() : ImageName.DEFAULT.getName();
+                        String type = link.getType() != null ? link.getType() : MediaType.IMAGE_JPEG.getContentType();
+                        result.add(new Link(link.getHref(), relation, name, link.getTitle(), type));
                     } else {
                         String profile = link.getProfile();
                         if (profile != null) {
-                            result.add(new Link(link.getHref(), relation, profile));
+                            result.add(new Link(link.getHref(), relation, profile, link.getName()));
                         } else {
-                            result.add(new Link(link.getHref(), relation));
+                            result.add(new Link(link.getHref(), relation, link.getName(), link.getTitle(), link.getType()));
                         }
                     }
                 }
