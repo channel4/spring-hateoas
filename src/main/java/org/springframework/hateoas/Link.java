@@ -127,6 +127,39 @@ public class Link implements Serializable {
                 this.rel = rel;
                 this.profile = profile;
         }
+        
+        /**
+         * Creates a new {@link Link} to the given URI with the given rel and the given profile and name.
+         *
+         * @param href must not be {@literal null} or empty.
+         * @param rel must not be {@literal null} or empty.
+         * @param profile must not be {@literal null} or empty.
+         * @param name
+         */
+        public Link(String href, String rel, String profile, String name) {
+                this(new UriTemplate(href), rel, profile, name);
+        }
+        
+        /**
+         * Creates a new Link from the given {@link UriTemplate} and rel.
+         *
+         * @param template must not be {@literal null}.
+         * @param rel must not be {@literal null} or empty.
+         * @param profile must not be {@literal null} or empty.
+         * @param name
+         */
+        public Link(UriTemplate template, String rel, String profile, String name) {
+
+                Assert.notNull(template, "UriTemplate must not be null!");
+                Assert.hasText(rel, "Rel must not be null or empty!");
+                Assert.hasText(profile, "Profile must not be null or empty!");
+
+                this.template = template;
+                this.href = template.toString();
+                this.rel = rel;
+                this.profile = profile;
+                this.name = name;
+        }
 
         /**
          * Creates a new {@link Link} to the given URI with the given rel and the
@@ -159,9 +192,9 @@ public class Link implements Serializable {
             this.template = template;
             this.href = template.toString();
             this.rel = rel;
-            this.name = name != null ? name : ImageName.DEFAULT.getName();
+            this.name = name;
             this.title = title;
-            this.type = type != null ? type : MediaType.IMAGE_JPEG.getContentType();
+            this.type = type;
         }
 
         /**
