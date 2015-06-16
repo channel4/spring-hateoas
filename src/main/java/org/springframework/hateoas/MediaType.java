@@ -2,7 +2,7 @@ package org.springframework.hateoas;
 
 public enum MediaType {
 
-    IMAGE_JPEG("image/jpeg");
+    IMAGE_JPEG("image/jpeg"), IMAGE_PNG("image/png");
 
     private String contentType;
 
